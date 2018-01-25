@@ -1,0 +1,26 @@
+{
+  "name": "school_voting_app_api",
+  "version": "1.0.0",
+  "description": "voting app api for schools",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www"
+  },
+  "author": "neckron",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neckron/school_voting_app_api.git"
+  },
+  "dependencies": {
+    "body-parser": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "method-override": "latest",
+    "jsonwebtoken": "latest",
+    "passport": "latest",
+    "passport-local": "latest",
+    "mongoose": "latest",
+    "crypto": "latest"
+  },
+  "license": "ISC"
+}

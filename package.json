@@ -13,14 +13,15 @@
   },
   "dependencies": {
     "body-parser": "latest",
+    "cors": "^2.8.4",
+    "crypto": "latest",
     "dotenv": "latest",
     "express": "latest",
-    "method-override": "latest",
     "jsonwebtoken": "latest",
-    "passport": "latest",
-    "passport-local": "latest",
+    "method-override": "latest",
     "mongoose": "latest",
-    "crypto": "latest"
+    "passport": "latest",
+    "passport-local": "latest"
   },
   "license": "ISC"
 }

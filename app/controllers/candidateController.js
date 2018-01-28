@@ -10,9 +10,13 @@ var sendJSONresponse = function(res, status, content) {
 module.exports.register = function(req, res) {
   var candidate = new Candidate();
   candidate.name = req.body.name;
+  candidate.lastname = req.body.lastname;
+  candidate.candidatenumber = req.body.candidatenumber;
+  candidate.grade = req.body.grade;
   candidate.pictureURI = req.body.pictureURI;
   candidate.proposals = req.body.proposals;
   candidate.type = req.body.type;
+
   candidate.save(function(err) {
     if(err){
       res.status(400);

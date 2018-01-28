@@ -4,13 +4,11 @@ var Schema = mongoose.Schema;
 var voteSchema = new mongoose.Schema({
   personVote: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Candidate',
-    required : true
+    ref: 'Candidate'
   },
   contrallorVote: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Candidate',
-    required : true
   },
   voteDate : {
     type : Date ,
@@ -20,8 +18,9 @@ var voteSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required : true,
-    unique :true
+    unique : true
   }
 });
 
+//voteSchema.index({personVote:1, contrallorVote:1, user:1}, { unique: true });
 module.exports = mongoose.model('Vote', voteSchema);

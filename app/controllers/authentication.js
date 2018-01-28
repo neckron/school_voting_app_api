@@ -9,7 +9,6 @@ var sendJSONresponse = function(res, status, content) {
 };
 
 module.exports.register = function(req, res) {
-
   console.log(req.body);
   var user = new User();
   user.name = req.body.name;
@@ -39,14 +38,7 @@ module.exports.register = function(req, res) {
 };
 
 module.exports.login = function(req, res) {
-
-  // if(!req.body.email || !req.body.password) {
-  //   sendJSONresponse(res, 400, {
-  //     "message": "All fields required"
-  //   });
-  //   return;
-  // }
-
+ console.log(req.body);
   passport.authenticate('local', function(err, user, info){
     var token;
 

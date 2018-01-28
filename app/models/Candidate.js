@@ -7,7 +7,21 @@ var candidateSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique : false
+  },
+  lastname : {
+    type: String,
+    required: false,
+    unique : false
+  },
+  candidatenumber : {
+    type: String,
+    required: true,
     unique : true
+  },
+  grade : {
+    type : String,
+    required : false
   },
   pictureURI: {
     type: String,

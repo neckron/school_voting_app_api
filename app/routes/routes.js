@@ -5,6 +5,7 @@ var ctrlCandidate = require('../controllers/candidateController.js');
 var jwt = require('jsonwebtoken');
 
 var router = express.Router();
+var routerProtect = express.Router();
 
 router.post('/user/login', ctrlAuth.login);
 router.get('/candidate/:type', ctrlCandidate.getCandidates);
@@ -12,8 +13,8 @@ router.get('/candidate/:type', ctrlCandidate.getCandidates);
 //router.get('/poll/:id' ,PollsCtrl.findPollById);
 //router.put('/polls/:id',PollsCtrl.updatePoll);
 
-router.use(function(req, res, next) {
-
+routerProtect.use(function(req, res, next) {
+ console.log('enter route use');
   // check header or url parameters or post parameters for token
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
   // decode token
@@ -38,12 +39,14 @@ router.use(function(req, res, next) {
   }
 });
 
-router.post('/user/register', ctrlAuth.register);
-router.post('/user/vote', ctrlVote.doVote);
-router.post('/candidate/register', ctrlCandidate.register);
+routerProtect.post('/user/register', ctrlAuth.register);
+routerProtect.post('/user/vote', ctrlVote.doVote);
+routerProtect.post('/candidate/register', ctrlCandidate.register);
 //router.route('/polls').post(PollsCtrl.createPoll);
 //router.route('/polls/:id').delete(PollsCtrl.deletePoll);
 //router.route('/polls/:username').get(PollsCtrl.findUserPolls);
 //router.get('/user/profile/:username', ctrlProfile.profileRead);
 
-module.exports = router;
+module.exports = {
+  router , routerProtect 
+}

@@ -9,8 +9,6 @@ var sendJSONresponse = function(res, status, content) {
 
 module.exports.doVote = function(req, res) {
 
-  console.log(req.body);
-
   var vote = new Vote();
   vote.personVote = req.body.personVoteId;
   vote.contrallorVote = req.body.contrallorVoteId;

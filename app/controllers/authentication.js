@@ -9,7 +9,6 @@ var sendJSONresponse = function(res, status, content) {
 };
 
 module.exports.register = function(req, res) {
-  console.log(req.body);
   var user = new User();
   user.name = req.body.name;
   user.email = req.body.email;
@@ -38,7 +37,6 @@ module.exports.register = function(req, res) {
 };
 
 module.exports.login = function(req, res) {
- console.log(req.body);
   passport.authenticate('local', function(err, user, info){
     var token;
 

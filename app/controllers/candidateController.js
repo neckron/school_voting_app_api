@@ -49,5 +49,5 @@ function getCandidatesByType(req,res ,type){
         res.json({"message" : "No candidates found"})
 
       }
-  });
+  }).sort({"candidatenumber" : "asc"});
 }

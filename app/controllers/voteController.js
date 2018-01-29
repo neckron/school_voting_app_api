@@ -33,3 +33,45 @@ module.exports.doVote = function(req, res) {
   });
 
 };
+
+exports.resultsContrallor = function(req , res){
+  var vote = new Vote();
+        Vote.aggregate([
+          {"$group" : {"_id":"$contrallorVote", "quantity":{"$sum":1}}},
+          { $lookup:
+           {
+             from: "candidates",
+             localField: "_id",
+             foreignField: "_id",
+             as: "candidate"
+           }
+      },
+        ],
+        function (err, result) {
+            if (err) return handleError(err);
+            return res.status(200).send(result);
+
+        }
+        );
+}
+
+exports.resultsPersonero = function(req , res){
+  var vote = new Vote();
+        Vote.aggregate([
+          {"$group" : {"_id":"$personVote", "quantity":{"$sum":1}}},
+          { $lookup:
+           {
+             from: "candidates",
+             localField: "_id",
+             foreignField: "_id",
+             as: "candidate"
+           }
+      },
+        ],
+        function (err, result) {
+            if (err) return handleError(err);
+            return res.status(200).send(result);
+
+        }
+        );
+}

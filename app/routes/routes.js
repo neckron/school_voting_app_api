@@ -9,6 +9,8 @@ var routerProtect = express.Router();
 
 router.post('/user/login', ctrlAuth.login);
 router.get('/candidate/:type', ctrlCandidate.getCandidates);
+router.get('/vote/results/contrallor', ctrlVote.resultsContrallor);
+router.get('/vote/results/personero', ctrlVote.resultsPersonero);
 //router.get('/polls' ,PollsCtrl.findPolls);
 //router.get('/poll/:id' ,PollsCtrl.findPollById);
 //router.put('/polls/:id',PollsCtrl.updatePoll);
@@ -48,5 +50,5 @@ routerProtect.post('/candidate/register', ctrlCandidate.register);
 //router.get('/user/profile/:username', ctrlProfile.profileRead);
 
 module.exports = {
-  router , routerProtect 
+  router , routerProtect
 }

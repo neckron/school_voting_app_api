@@ -2,11 +2,14 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var mongoose = require('mongoose');
 var User = require('../models/User');
+var Vote = require('../models/Vote');
 
 passport.use(new LocalStrategy({
+
     usernameField: 'username'
   },
   function(username, password, done) {
+    var vote;
     User.findOne({ username: username }, function (err, user) {
       if (err) { return done(err); }
       // Return if user not found in database

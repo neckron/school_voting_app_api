@@ -8,12 +8,14 @@ var router = express.Router();
 var routerProtect = express.Router();
 
 router.post('/user/login', ctrlAuth.login);
+router.get('/vote/alreadyVoted/:userid', ctrlVote.alreadyVoted);
 router.get('/candidate/:type', ctrlCandidate.getCandidates);
 router.get('/vote/results/contrallor', ctrlVote.resultsContrallor);
 router.get('/vote/results/personero', ctrlVote.resultsPersonero);
-//router.get('/polls' ,PollsCtrl.findPolls);
-//router.get('/poll/:id' ,PollsCtrl.findPollById);
-//router.put('/polls/:id',PollsCtrl.updatePoll);
+router.get('/vote/results/general', ctrlVote.resultVotes);
+//router.get('/vote/alreadyVoted', ctrlVote.alreadyVoted);
+
+
 
 routerProtect.use(function(req, res, next) {
  console.log('enter route use');
@@ -44,10 +46,8 @@ routerProtect.use(function(req, res, next) {
 routerProtect.post('/user/register', ctrlAuth.register);
 routerProtect.post('/user/vote', ctrlVote.doVote);
 routerProtect.post('/candidate/register', ctrlCandidate.register);
-//router.route('/polls').post(PollsCtrl.createPoll);
-//router.route('/polls/:id').delete(PollsCtrl.deletePoll);
-//router.route('/polls/:username').get(PollsCtrl.findUserPolls);
-//router.get('/user/profile/:username', ctrlProfile.profileRead);
+routerProtect.post('/user/bulkRegister', ctrlAuth.bulkRegister);
+
 
 module.exports = {
   router , routerProtect

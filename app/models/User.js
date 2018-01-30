@@ -6,11 +6,6 @@ var Schema = mongoose.Schema;
 const USERTYPE = ['ADMIN','VOTER']
 
 var userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    unique: true,
-    required: false
-  },
   name: {
     type: String,
     required: true
@@ -35,6 +30,10 @@ var userSchema = new mongoose.Schema({
   },
   course : {
     type : String,
+    required : false
+  },
+  vote :{
+    type : Boolean,
     required : false
   },
   hash: String,

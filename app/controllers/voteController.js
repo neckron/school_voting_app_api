@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-//var User = require('../models/User');
+var User = require('../models/User');
 var Vote = require('../models/Vote');
 
 var sendJSONresponse = function(res, status, content) {
@@ -23,6 +23,13 @@ module.exports.doVote = function(req, res) {
       });
     }
     else {
+
+
+      User.findOne({ _id: req.body.userId }, function (err, doc){
+        doc.vote = true;
+        doc.save();
+      });
+
     res.status(200);
     res.json({
       "message" : "Vote registered successfully."
@@ -54,7 +61,6 @@ exports.resultsContrallor = function(req , res){
 }
 
 exports.resultsPersonero = function(req , res){
-  var vote = new Vote();
         Vote.aggregate([
           {"$group" : {"_id":"$personVote", "quantity":{"$sum":1}}},
           { $lookup:
@@ -72,4 +78,31 @@ exports.resultsPersonero = function(req , res){
 
         }
         );
+}
+
+exports.resultVotes = function(req , res){
+  Vote.aggregate([
+         {"$group" : { "_id" : "$vote" , "quatity" : {"$sum" :1}}
+      }
+],
+       function (err, result) {
+         console.log(result)
+           if (err) return handleError(err);
+           return res.status(200).send(result);
+
+       }
+     )
+}
+
+
+
+
+exports.alreadyVoted = function(req , res){
+  Vote.findOne({user : req.params.userid} , function(err,vote){
+    if(vote){
+      return res.status(200).send({massage : "Ya ha votado!"});
+    }else{
+      return res.status(404).send({massage : "No ha votado!"});
+    }
+})
 }

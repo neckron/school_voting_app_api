@@ -81,8 +81,8 @@ exports.resultsPersonero = function(req , res){
 }
 
 exports.resultVotes = function(req , res){
-  Vote.aggregate([
-         {"$group" : { "_id" : "$vote" , "quatity" : {"$sum" :1}}
+  User.aggregate([
+         {"$group" : { "_id" : "$vote" , "quantity" : {"$sum" :1}}
       }
 ],
        function (err, result) {

@@ -8,6 +8,7 @@ var router = express.Router();
 var routerProtect = express.Router();
 
 router.post('/user/login', ctrlAuth.login);
+router.post('/user/register', ctrlAuth.register);
 router.get('/vote/alreadyVoted/:userid', ctrlVote.alreadyVoted);
 router.get('/candidate/:type', ctrlCandidate.getCandidates);
 router.get('/vote/results/contrallor', ctrlVote.resultsContrallor);
@@ -43,7 +44,7 @@ routerProtect.use(function(req, res, next) {
   }
 });
 
-routerProtect.post('/user/register', ctrlAuth.register);
+
 routerProtect.post('/user/vote', ctrlVote.doVote);
 routerProtect.post('/candidate/register', ctrlCandidate.register);
 routerProtect.post('/user/bulkRegister', ctrlAuth.bulkRegister);

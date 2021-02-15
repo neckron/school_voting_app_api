@@ -16,7 +16,7 @@
     "cors": "^2.8.4",
     "crypto": "latest",
     "dotenv": "latest",
-    "express": "latest",
+    "express": "^4.17.1",
     "jsonwebtoken": "latest",
     "method-override": "latest",
     "mongoose": "latest",

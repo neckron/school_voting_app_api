@@ -21,15 +21,16 @@ module.exports.bulkRegister = function(req, res) {
    user.location = arrayl[i].location;
    user.course = arrayl[i].course;
    user.setPassword(arrayl[i].password);
-   user.save(function() {
+   user.save(function(err) {
      if(err){
        console.log(err);
-
+     }else {
+       console.log("element stored")
      }
- });
+ }); 
+  console.log("index "+i)
  }
- console.log("guardados: "+ x);
- console.log("no guardados: "+ y)
+ return res;
 }
 
 module.exports.register = function(req, res) {

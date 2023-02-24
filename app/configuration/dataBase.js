@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
+require('dotenv').config()
 var gracefulShutdown;
 var dbURI = process.env.MONGODB_URI;
+console.log(process.env.MONGODB_URI)
 mongoose.Promise = global.Promise
 mongoose.connect(dbURI);
 mongoose.set("useCreateIndex", true);

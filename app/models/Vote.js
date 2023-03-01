@@ -14,6 +14,10 @@ var voteSchema = new mongoose.Schema({
     type : Date ,
     required : true
   },
+  location: {
+    type: String,
+    required : true
+  },
   user : {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

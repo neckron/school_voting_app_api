@@ -14,6 +14,7 @@ module.exports.doVote = function(req, res) {
   vote.contrallorVote = req.body.contrallorVoteId;
   vote.voteDate = new Date();
   vote.user = req.body.userId;
+  vote.location = req.body.location;
 
   vote.save(function(err) {
     if(err){

@@ -83,8 +83,7 @@ exports.resultsPersonero = function(req , res){
 
 exports.resultVotes = function(req , res){
   User.aggregate([
-         {"$group" : { "_id" : "$vote" , "quantity" : {"$sum" :1}}
-      }
+         {"$group" : { "_id" : "$vote" , "quantity" : {"$sum" :1}}}
 ],
        function (err, result) {
          console.log(result)
@@ -106,4 +105,80 @@ exports.alreadyVoted = function(req , res){
       return res.status(404).send({massage : "No ha votado!"});
     }
 })
+}
+
+exports.resultsByLocation = function(req , res){
+  Vote.aggregate([
+    {
+      $lookup: {
+        from: "candidates",
+        localField: "contrallorVote",
+        foreignField: "_id",
+        as: "contrallorInfo"
+      }
+    },
+    {
+      "$unwind": "$contrallorInfo"
+    },
+    {
+      $lookup: {
+        from: "candidates",
+        localField: "personVote",
+        foreignField: "_id",
+        as: "personeroInfo"
+      }
+    },
+    {
+      "$unwind": "$personeroInfo"
+    },
+    {
+      $group: {
+        _id: {
+          location: "$location",
+          personVote: {
+            "$concat": [
+              "$personeroInfo.name",
+              " ",
+              "$personeroInfo.lastname"
+            ]
+          },
+          contrallorVote: {
+            "$concat": [
+              "$contrallorInfo.name",
+              " ",
+              "$contrallorInfo.lastname"
+            ]
+          },
+          
+        },
+        count: {
+          "$sum": 1
+        }
+      }
+    },
+    {
+      $group: {
+        _id: "$_id.location",
+        votosPersoneros: {
+          $push: {
+            personero: "$_id.personVote",
+            count: "$count"
+          },
+          
+        },
+        votosContralores: {
+          $push: {
+            contrallorId: "$_id.contrallorVote",
+            count: "$count"
+          }
+        }
+      }
+    }
+  ],
+  function (err, result) {
+      if (err) return handleError(err);
+      return res.status(200).send(result);
+
+  }
+  );
 }

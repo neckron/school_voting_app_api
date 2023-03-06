@@ -107,7 +107,62 @@ exports.alreadyVoted = function(req , res){
 })
 }
 
-exports.resultsByLocation = function(req , res){
+exports.resultsByLocationPerson = function(req , res){
+  Vote.aggregate([
+    db.votes.aggregate([
+      {
+        $lookup: {
+          from: "candidates",
+          localField: "personVote",
+          foreignField: "_id",
+          as: "personeroInfo"
+        }
+      },
+      {
+        "$unwind": "$personeroInfo"
+      },
+      {
+        $group: {
+          _id: {
+            location: "$location",
+            personVote: {
+              "$concat": [
+                "#",
+                "$personeroInfo.candidatenumber",
+                " - ",
+                "$personeroInfo.name",
+                " ",
+                "$personeroInfo.lastname"
+              ]
+            }
+          },
+          count: {
+            "$sum": 1
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$_id.location",
+          votosPersoneros: {
+            $push: {
+              personero: "$_id.personVote",
+              count: "$count"
+            }
+          }
+        }
+      }
+    ])
+  ],
+  function (err, result) {
+      if (err) return handleError(err);
+      return res.status(200).send(result);
+
+  }
+  );
+}
+
+exports.resultsByLocationContrallor = function(req , res){
   Vote.aggregate([
     {
       $lookup: {
@@ -121,35 +176,19 @@ exports.resultsByLocation = function(req , res){
       "$unwind": "$contrallorInfo"
     },
     {
-      $lookup: {
-        from: "candidates",
-        localField: "personVote",
-        foreignField: "_id",
-        as: "personeroInfo"
-      }
-    },
-    {
-      "$unwind": "$personeroInfo"
-    },
-    {
       $group: {
         _id: {
           location: "$location",
-          personVote: {
-            "$concat": [
-              "$personeroInfo.name",
-              " ",
-              "$personeroInfo.lastname"
-            ]
-          },
           contrallorVote: {
             "$concat": [
+              "#",
+              "$contrallorInfo.candidatenumber",
+              " - ",
               "$contrallorInfo.name",
               " ",
               "$contrallorInfo.lastname"
             ]
-          },
-          
+          }
         },
         count: {
           "$sum": 1
@@ -159,26 +198,18 @@ exports.resultsByLocation = function(req , res){
     {
       $group: {
         _id: "$_id.location",
-        votosPersoneros: {
+        votosContraloers: {
           $push: {
-            personero: "$_id.personVote",
-            count: "$count"
-          },
-          
-        },
-        votosContralores: {
-          $push: {
-            contrallorId: "$_id.contrallorVote",
+            contralor: "$_id.contrallorVote",
             count: "$count"
           }
         }
       }
     }
-  ],
+]),
   function (err, result) {
       if (err) return handleError(err);
       return res.status(200).send(result);
 
   }
-  );
 }

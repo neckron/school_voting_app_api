@@ -159,53 +159,79 @@ exports.resultsByLocationPerson = function(req , res){
 }
 
 exports.resultsByLocationContrallor = function(req , res){
-  Vote.aggregate([
-    {
-      $lookup: {
-        from: "candidates",
-        localField: "contrallorVote",
-        foreignField: "_id",
-        as: "contrallorInfo"
-      }
-    },
-    {
-      "$unwind": "$contrallorInfo"
-    },
-    {
-      $group: {
-        _id: {
-          location: "$location",
-          contrallorVote: {
-            "$concat": [
-              "#",
-              "$contrallorInfo.candidatenumber",
-              " - ",
-              "$contrallorInfo.name",
-              " ",
-              "$contrallorInfo.lastname"
-            ]
+  exports.resultsByLocation = function(req , res){
+    Vote.aggregate([
+      {
+        $lookup: {
+          from: "candidates",
+          localField: "contrallorVote",
+          foreignField: "_id",
+          as: "contrallorInfo"
+        }
+      },
+      {
+        "$unwind": "$contrallorInfo"
+      },
+      {
+        $lookup: {
+          from: "candidates",
+          localField: "personVote",
+          foreignField: "_id",
+          as: "personeroInfo"
+        }
+      },
+      {
+        "$unwind": "$personeroInfo"
+      },
+      {
+        $group: {
+          _id: {
+            location: "$location",
+            personVote: {
+              "$concat": [
+                "$personeroInfo.name",
+                " ",
+                "$personeroInfo.lastname"
+              ]
+            },
+            contrallorVote: {
+              "$concat": [
+                "$contrallorInfo.name",
+                " ",
+                "$contrallorInfo.lastname"
+              ]
+            },
+  
+          },
+          count: {
+            "$sum": 1
           }
-        },
-        count: {
-          "$sum": 1
+        }
+      },
+      {
+        $group: {
+          _id: "$_id.location",
+          votosPersoneros: {
+            $push: {
+              personero: "$_id.personVote",
+              count: "$count"
+            },
+  
+          },
+          votosContralores: {
+            $push: {
+              contrallorId: "$_id.contrallorVote",
+              count: "$count"
+            }
+          }
         }
       }
-    },
-    {
-      $group: {
-        _id: "$_id.location",
-        votosContraloers: {
-          $push: {
-            contralor: "$_id.contrallorVote",
-            count: "$count"
-          }
-        }
-      }
+    ],
+    function (err, result) {
+        if (err) return handleError(err);
+        return res.status(200).send(result);
+  
     }
-]),
-  function (err, result) {
-      if (err) return handleError(err);
-      return res.status(200).send(result);
-
+    );
   }
 }

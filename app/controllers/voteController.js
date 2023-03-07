@@ -108,9 +108,7 @@ exports.alreadyVoted = function(req , res){
 }
 
 exports.resultsByLocationPerson = function(req , res){
-  Vote.aggregate([
-    db.votes.aggregate([
-      {
+  Vote.aggregate([{
         $lookup: {
           from: "candidates",
           localField: "personVote",
@@ -152,14 +150,12 @@ exports.resultsByLocationPerson = function(req , res){
           }
         }
       }
-    ])
-  ],
+  ]),
   function (err, result) {
       if (err) return handleError(err);
       return res.status(200).send(result);
 
-  }
-  );
+  };
 }
 
 exports.resultsByLocationContrallor = function(req , res){

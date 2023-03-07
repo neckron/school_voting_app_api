@@ -14,10 +14,9 @@ router.get('/candidate/:type', ctrlCandidate.getCandidates);
 router.get('/vote/results/contrallor', ctrlVote.resultsContrallor);
 router.get('/vote/results/personero', ctrlVote.resultsPersonero);
 router.get('/vote/results/general', ctrlVote.resultVotes);
-router.get('/vote/results/locationByPerson', ctrlVote.resultsByLocationPerson);
-router.get('/vote/results/locationByContrallor', ctrlVote.resultsByLocationContrallor);
-
-
+router.get('/test', ctrlVote.prueba);
+router.get('/vote/results/location', ctrlVote.resultsByLocation);
+router.get('/vote/results/locationPerson', ctrlVote.resultsByLocationPerson);
 
 routerProtect.use(function(req, res, next) {
  console.log('enter route use');

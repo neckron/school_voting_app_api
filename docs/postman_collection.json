@@ -1,0 +1,345 @@
+{
+  "info": {
+    "name": "School Voting App API",
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "description": "Complete collection for the School Voting API.\n\nSetup:\n1. Set the {{baseUrl}} variable to http://localhost:4000/api\n2. Run Login or Register — {{token}} and {{userId}} are saved automatically\n3. All protected routes use {{token}} via the x-access-token header",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "}",
+                  "if (json.user && json.user._id) {",
+                  "  pm.collectionVariables.set('userId', json.user._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testadmin\",\n  \"password\": \"secret123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Authenticate a user. On success, {{token}} and {{userId}} are saved automatically as collection variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"username\": \"jdoe\",\n  \"password\": \"secret123\",\n  \"userrole\": \"VOTER\",\n  \"grade\": \"10A\",\n  \"location\": \"Building B\",\n  \"course\": \"Mathematics\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Register a single user. Returns a JWT token on success, which is saved to {{token}}.\n\nOptional fields: grade, location, course."
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Register Users",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-access-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/bulkRegister",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "bulkRegister"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"name\": \"Alice Smith\",\n    \"username\": \"alice1\",\n    \"password\": \"pass123\",\n    \"userrole\": \"VOTER\",\n    \"grade\": \"9B\",\n    \"location\": \"Building A\",\n    \"course\": \"Science\"\n  },\n  {\n    \"name\": \"Bob Jones\",\n    \"username\": \"bob1\",\n    \"password\": \"pass123\",\n    \"userrole\": \"VOTER\",\n    \"grade\": \"9B\",\n    \"location\": \"Building A\",\n    \"course\": \"Science\"\n  }\n]",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Register multiple users in one request. Requires JWT.\n\nOptional fields per user: grade, location, course.\n\nReturns: { message: 'N users registered successfully.' }"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Candidates",
+      "item": [
+        {
+          "name": "Get Candidates - PERSONERO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/candidate/PERSONERO",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidate", "PERSONERO"]
+            },
+            "description": "Get all personero candidates."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Candidates - BLANK_PERSONERO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/candidate/BLANK_PERSONERO",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidate", "BLANK_PERSONERO"]
+            },
+            "description": "Get the blank vote option for personero."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Candidates - CONTRALLOR",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/candidate/CONTRALLOR",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidate", "CONTRALLOR"]
+            },
+            "description": "Get all contralor candidates."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Candidates - BLANK_CONTRALLOR",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/candidate/BLANK_CONTRALLOR",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidate", "BLANK_CONTRALLOR"]
+            },
+            "description": "Get the blank vote option for contralor."
+          },
+          "response": []
+        },
+        {
+          "name": "Register Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-access-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/candidate/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidate", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Maria Garcia\",\n  \"candidatenumber\": \"001\",\n  \"pictureURI\": \"/images/maria.jpg\",\n  \"type\": \"PERSONERO\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Register a new candidate. Requires JWT.\n\ntype must be one of: PERSONERO, BLANK_PERSONERO, CONTRALLOR, BLANK_CONTRALLOR"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Votes",
+      "item": [
+        {
+          "name": "Submit Vote",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-access-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "vote"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"personVoteId\": \"<candidate_objectid>\",\n  \"contrallorVoteId\": \"<candidate_objectid>\",\n  \"location\": \"Building A\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Submit a vote. Requires JWT.\n\n- userId: use {{userId}} (set automatically on login)\n- personVoteId: ObjectId of a PERSONERO or BLANK_PERSONERO candidate\n- contrallorVoteId: ObjectId of a CONTRALLOR or BLANK_CONTRALLOR candidate\n- location: the polling station identifier"
+          },
+          "response": []
+        },
+        {
+          "name": "Check Already Voted",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vote/alreadyVoted/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vote", "alreadyVoted", "{{userId}}"]
+            },
+            "description": "Check if a user has already cast a vote.\n\nReturns 200 if voted, 404 if not.\n\nUses {{userId}} variable (set automatically on login)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Results",
+      "item": [
+        {
+          "name": "Results - General Participation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vote/results/general",
+              "host": ["{{baseUrl}}"],
+              "path": ["vote", "results", "general"]
+            },
+            "description": "Overall participation: how many users have voted vs not voted."
+          },
+          "response": []
+        },
+        {
+          "name": "Results - Personero",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vote/results/personero",
+              "host": ["{{baseUrl}}"],
+              "path": ["vote", "results", "personero"]
+            },
+            "description": "Aggregated vote totals per personero candidate, with candidate details."
+          },
+          "response": []
+        },
+        {
+          "name": "Results - Contrallor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vote/results/contrallor",
+              "host": ["{{baseUrl}}"],
+              "path": ["vote", "results", "contrallor"]
+            },
+            "description": "Aggregated vote totals per contralor candidate, with candidate details."
+          },
+          "response": []
+        },
+        {
+          "name": "Results - By Location (Contrallor)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vote/results/location",
+              "host": ["{{baseUrl}}"],
+              "path": ["vote", "results", "location"]
+            },
+            "description": "Contralor vote counts broken down by polling location."
+          },
+          "response": []
+        },
+        {
+          "name": "Results - By Location (Personero)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vote/results/locationPerson",
+              "host": ["{{baseUrl}}"],
+              "path": ["vote", "results", "locationPerson"]
+            },
+            "description": "Personero vote counts broken down by polling location."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/test",
+              "host": ["{{baseUrl}}"],
+              "path": ["test"]
+            },
+            "description": "Verify the server is running. Returns { message: 'Funciona!' }."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

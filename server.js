@@ -1,50 +1,36 @@
 // server.js
 
-    // set up ========================
-    var express  = require('express');
-    cors = require('cors') ;
-    // TODO var morgan = require('morgan');
-    var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
-    var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
-    var jwt = require("jsonwebtoken");
-    var path = require('path');
-    require('dotenv').config();
-    require('./app/configuration/dataBase');
-    require('./app/configuration/passport');
+const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
+const path = require('path');
 
-    // routes ========================
-   var routesApi = require('./app/routes/routes.js');
-   var app = express();
-   app.use(cors());
-   app.options('*', cors())
+require('./app/configuration/dataBase');
+require('./app/configuration/passport');
 
-   var corsOptions = {
-  origin: 'http://localhost:4200',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
+// CORS configuration
+const origins = process.env.CORS_ALLOWED_ORIGINS
+  ? process.env.CORS_ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:4200'];
 
+const app = express();
 
-    // configuration =================
+app.use(cors({ origin: origins, optionsSuccessStatus: 200 }));
+app.options('/*splat', cors({ origin: origins }));
 
-    //app.use(express.static(path.join(__dirname, 'public')));        // set the static files location /public/img will be /img for users
-  //  app.use(express.static(path.join(__dirname, 'client')));
-	  // TODO  app.use(morgan('dev'));                                         // log every request to the console
-    // TODO app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
-    app.use(bodyParser.json());                                     // parse application/json
-    app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
-    app.use(methodOverride()); //TODO what it is for?
-    //app.use('/api', routesApi);
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.json({ type: 'application/vnd.api+json' }));
 
+// routes
+const routesApi = require('./app/routes/routes.js');
+app.use('/api', routesApi.router);
+app.use('/api', routesApi.routerProtect);
 
-    app.use('/api', routesApi.router , function(req, res, next) {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept , x-access-token");
-next();
-    });
+// Global error handler
+app.use(function(err, req, res, next) {
+  const status = err.status || 500;
+  res.status(status).json({ success: false, message: err.message || 'Internal server error' });
+});
 
-    app.use('/api',routesApi.routerProtect , function(req, res, next) {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept , x-access-token");
-next();
-    });
-    module.exports = app;
+module.exports = app;

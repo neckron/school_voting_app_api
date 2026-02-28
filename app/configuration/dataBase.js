@@ -1,11 +1,8 @@
-var mongoose = require('mongoose');
-require('dotenv').config()
-var gracefulShutdown;
-var dbURI = process.env.MONGODB_URI;
-console.log(process.env.MONGODB_URI)
-mongoose.Promise = global.Promise
+const mongoose = require('mongoose');
+
+const dbURI = process.env.MONGODB_URI;
+
 mongoose.connect(dbURI);
-mongoose.set("useCreateIndex", true);
 
 // CONNECTION EVENTS
 mongoose.connection.on('connected', function() {
@@ -19,32 +16,26 @@ mongoose.connection.on('disconnected', function() {
 });
 
 // CAPTURE APP TERMINATION / RESTART EVENTS
-// To be called when process is restarted or terminated
-gracefulShutdown = function(msg, callback) {
-  mongoose.connection.close(function() {
-    console.log('::: Mongoose disconnected through ' + msg);
-    callback();
-  });
+const gracefulShutdown = async (msg) => {
+  await mongoose.connection.close();
+  console.log('::: Mongoose disconnected through ' + msg);
 };
+
 // For nodemon restarts
 process.once('SIGUSR2', function() {
-  gracefulShutdown('nodemon restart', function() {
+  gracefulShutdown('nodemon restart').then(() => {
     process.kill(process.pid, 'SIGUSR2');
   });
 });
 // For app termination
 process.on('SIGINT', function() {
-  gracefulShutdown('app termination', function() {
+  gracefulShutdown('app termination').then(() => {
     process.exit(0);
   });
 });
 // For Heroku app termination
 process.on('SIGTERM', function() {
-  gracefulShutdown('::: Heroku app termination', function() {
+  gracefulShutdown('Heroku app termination').then(() => {
     process.exit(0);
   });
 });
-
-// BRING IN YOUR SCHEMAS & MODELS
-//require('./poll');
-//require('./user');

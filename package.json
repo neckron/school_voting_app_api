@@ -4,7 +4,11 @@
   "description": "voting app api for schools",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "dev": "node --watch ./bin/www"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "author": "neckron",
   "repository": {
@@ -12,16 +16,14 @@
     "url": "https://github.com/neckron/school_voting_app_api.git"
   },
   "dependencies": {
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.4",
-    "crypto": "^1.0.1",
-    "dotenv": "^8.6.0",
-    "express": "^4.17.1",
-    "http": "0.0.1-security",
-    "jsonwebtoken": "^9.0.0",
-    "method-override": "^3.0.0",
-    "mongoose": "^5.11.15",
-    "passport": "^0.6.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-validator": "^7.3.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.15.0",
+    "morgan": "^1.10.1",
+    "passport": "^0.7.0",
     "passport-local": "^1.0.0"
   },
   "license": "ISC"

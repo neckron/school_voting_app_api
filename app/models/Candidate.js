@@ -1,41 +1,42 @@
-var mongoose = require( 'mongoose' );
-var Schema = mongoose.Schema;
-const CANDIDATETYPE = ['PERSONERO','BLANK_PERSONERO','CONTRALLOR','BLANK_CONTRALLOR']
+const mongoose = require('mongoose');
 
-var candidateSchema = new mongoose.Schema({
+const CANDIDATETYPE = ['PERSONERO', 'BLANK_PERSONERO', 'CONTRALLOR', 'BLANK_CONTRALLOR'];
 
+const candidateSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique : false
+    unique: false
   },
-  lastname : {
+  lastname: {
     type: String,
     required: false,
-    unique : false
+    unique: false
   },
-  candidatenumber : {
+  candidatenumber: {
     type: String,
     required: true,
-    unique : true
+    unique: true
   },
-  grade : {
-    type : String,
-    required : false
+  grade: {
+    type: String,
+    required: false
   },
   pictureURI: {
     type: String,
     required: true
   },
-  proposals : {
-    type : String ,
-    required : false
+  proposals: {
+    type: String,
+    required: false
   },
-  type :{
-    type : String ,
-    required : true ,
-    enum : CANDIDATETYPE
+  type: {
+    type: String,
+    required: true,
+    enum: CANDIDATETYPE
   }
-});
+}, { timestamps: true });
+
+candidateSchema.index({ type: 1, candidatenumber: 1 });
 
 module.exports = mongoose.model('Candidate', candidateSchema);

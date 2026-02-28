@@ -1,0 +1,602 @@
+openapi: "3.0.3"
+info:
+  title: School Voting App API
+  version: "1.0.0"
+  description: >
+    REST API for a school-level voting system supporting candidate registration,
+    user management, vote submission, and result aggregation by location.
+
+servers:
+  - url: http://localhost:4000/api
+    description: Local development server
+
+components:
+  securitySchemes:
+    BearerToken:
+      type: apiKey
+      in: header
+      name: x-access-token
+      description: JWT token obtained from the /user/login endpoint
+
+  schemas:
+    UserRole:
+      type: string
+      enum: [ADMIN, VOTER]
+
+    CandidateType:
+      type: string
+      enum: [PERSONERO, BLANK_PERSONERO, CONTRALLOR, BLANK_CONTRALLOR]
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          example: "jdoe123"
+        password:
+          type: string
+          format: password
+          example: "secret123"
+
+    RegisterUserRequest:
+      type: object
+      required: [name, username, userrole, password]
+      properties:
+        name:
+          type: string
+          example: "Jane Doe"
+        username:
+          type: string
+          example: "jdoe123"
+        userrole:
+          $ref: "#/components/schemas/UserRole"
+        grade:
+          type: string
+          example: "10A"
+        location:
+          type: string
+          example: "Building B"
+        course:
+          type: string
+          example: "Mathematics"
+        password:
+          type: string
+          format: password
+          minLength: 6
+
+    BulkRegisterRequest:
+      type: array
+      items:
+        $ref: "#/components/schemas/RegisterUserRequest"
+
+    VoteRequest:
+      type: object
+      required: [userId, personVoteId, contrallorVoteId, location]
+      properties:
+        userId:
+          type: string
+          example: "64a1b2c3d4e5f6789abcdef0"
+        personVoteId:
+          type: string
+          example: "64a1b2c3d4e5f6789abcdef1"
+        contrallorVoteId:
+          type: string
+          example: "64a1b2c3d4e5f6789abcdef2"
+        location:
+          type: string
+          example: "Building A"
+
+    RegisterCandidateRequest:
+      type: object
+      required: [name, candidatenumber, pictureURI, type]
+      properties:
+        name:
+          type: string
+          example: "Maria Garcia"
+        lastname:
+          type: string
+          example: "Lopez"
+        candidatenumber:
+          type: string
+          example: "001"
+        grade:
+          type: string
+          example: "11B"
+        pictureURI:
+          type: string
+          example: "/images/maria.jpg"
+        proposals:
+          type: string
+          example: "Better cafeteria food"
+        type:
+          $ref: "#/components/schemas/CandidateType"
+
+    TokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        message:
+          type: string
+          example: "User registered successfully."
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            username:
+              type: string
+            userrole:
+              $ref: "#/components/schemas/UserRole"
+            grade:
+              type: string
+            location:
+              type: string
+            vote:
+              type: boolean
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    CandidateResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        lastname:
+          type: string
+        candidatenumber:
+          type: string
+        grade:
+          type: string
+        pictureURI:
+          type: string
+        proposals:
+          type: string
+        type:
+          $ref: "#/components/schemas/CandidateType"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    VoteResultItem:
+      type: object
+      properties:
+        _id:
+          type: string
+          nullable: true
+          description: Candidate ObjectId
+        quantity:
+          type: integer
+        candidate:
+          type: array
+          items:
+            $ref: "#/components/schemas/CandidateResponse"
+
+    LocationContrallorResultItem:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Location name
+        votosContralores:
+          type: array
+          items:
+            type: object
+            properties:
+              contralor:
+                type: string
+                example: "#001 - Maria Lopez"
+              count:
+                type: integer
+
+    LocationPersoneroResultItem:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Location name
+        votosPersoneros:
+          type: array
+          items:
+            type: object
+            properties:
+              personero:
+                type: string
+                example: "#002 - Juan Garcia"
+              count:
+                type: integer
+
+    GeneralResultItem:
+      type: object
+      properties:
+        _id:
+          type: boolean
+          nullable: true
+          description: "true = voted, false = not voted"
+        quantity:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Error description"
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              msg:
+                type: string
+              path:
+                type: string
+              location:
+                type: string
+
+paths:
+  /user/login:
+    post:
+      summary: Authenticate user and receive JWT
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+
+  /user/register:
+    post:
+      summary: Register a new user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterUserRequest"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "500":
+          description: Server error (e.g. duplicate username)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /user/bulkRegister:
+    post:
+      summary: Bulk register multiple users (admin operation)
+      tags: [Authentication]
+      security:
+        - BearerToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkRegisterRequest"
+      responses:
+        "201":
+          description: All users registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "5 users registered successfully."
+        "401":
+          description: Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+
+  /user/vote:
+    post:
+      summary: Submit a vote
+      tags: [Votes]
+      security:
+        - BearerToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VoteRequest"
+      responses:
+        "200":
+          description: Vote submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Vote registered successfully."
+        "401":
+          description: Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "500":
+          description: Server error (e.g. user already voted)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /candidate/{type}:
+    get:
+      summary: Get candidates by type
+      tags: [Candidates]
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CandidateType"
+          description: Candidate type
+      responses:
+        "200":
+          description: List of candidates sorted by candidatenumber
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CandidateResponse"
+        "404":
+          description: No candidates found for this type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /candidate/register:
+    post:
+      summary: Register a new candidate
+      tags: [Candidates]
+      security:
+        - BearerToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterCandidateRequest"
+      responses:
+        "201":
+          description: Candidate created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Candidate registered successfully."
+        "401":
+          description: Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+
+  /vote/alreadyVoted/{userid}:
+    get:
+      summary: Check if a user has already voted
+      tags: [Votes]
+      parameters:
+        - name: userid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the user
+      responses:
+        "200":
+          description: User has voted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Ya ha votado!"
+        "404":
+          description: User has not voted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No ha votado!"
+
+  /vote/results/contrallor:
+    get:
+      summary: Aggregated vote totals for contralor candidates
+      tags: [Results]
+      responses:
+        "200":
+          description: Vote counts grouped by contralor candidate
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VoteResultItem"
+
+  /vote/results/personero:
+    get:
+      summary: Aggregated vote totals for personero candidates
+      tags: [Results]
+      responses:
+        "200":
+          description: Vote counts grouped by personero candidate
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VoteResultItem"
+
+  /vote/results/general:
+    get:
+      summary: Overall voting participation statistics
+      tags: [Results]
+      responses:
+        "200":
+          description: Counts of users who voted vs did not vote
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GeneralResultItem"
+
+  /vote/results/location:
+    get:
+      summary: Contralor vote results grouped by location
+      tags: [Results]
+      responses:
+        "200":
+          description: Contralor vote counts per location
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LocationContrallorResultItem"
+
+  /vote/results/locationPerson:
+    get:
+      summary: Personero vote results grouped by location
+      tags: [Results]
+      responses:
+        "200":
+          description: Personero vote counts per location
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LocationPersoneroResultItem"
+
+  /test:
+    get:
+      summary: Health check endpoint
+      tags: [System]
+      responses:
+        "200":
+          description: API is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Funciona!"

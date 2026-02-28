@@ -1,30 +1,32 @@
-var mongoose = require( 'mongoose' );
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
 
-var voteSchema = new mongoose.Schema({
+const voteSchema = new mongoose.Schema({
   personVote: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Candidate'
   },
   contrallorVote: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Candidate',
+    ref: 'Candidate'
   },
-  voteDate : {
-    type : Date ,
-    required : true
+  voteDate: {
+    type: Date,
+    required: true
   },
   location: {
     type: String,
-    required : true
+    required: true
   },
-  user : {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required : true,
-    unique : true
+    required: true,
+    unique: true
   }
-});
+}, { timestamps: true });
 
-//voteSchema.index({personVote:1, contrallorVote:1, user:1}, { unique: true });
+voteSchema.index({ location: 1 });
+voteSchema.index({ contrallorVote: 1 });
+voteSchema.index({ personVote: 1 });
+
 module.exports = mongoose.model('Vote', voteSchema);

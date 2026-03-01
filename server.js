@@ -11,7 +11,11 @@ require('./app/configuration/passport');
 // CORS configuration
 const origins = process.env.CORS_ALLOWED_ORIGINS
   ? process.env.CORS_ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:4200'];
+  : [
+      'http://localhost:4200',
+      'http://192.168.0.91:4200',
+      'https://elections-afl-front.herokuapp.com'
+    ];
 
 const app = express();
 

@@ -2,26 +2,9 @@
   "info": {
     "name": "School Voting App API",
     "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "description": "Complete collection for the School Voting API.\n\nSetup:\n1. Set the {{baseUrl}} variable to http://localhost:4000/api\n2. Run Login or Register — {{token}} and {{userId}} are saved automatically\n3. All protected routes use {{token}} via the x-access-token header",
+    "description": "Complete collection for the School Voting API.\n\nSetup:\n1. Import the collection and both environment files (Local / Heroku)\n2. Select the desired environment from the top-right dropdown\n3. Run Login — {{token}} and {{userId}} are saved automatically to the active environment\n4. All protected routes use {{token}} via the x-access-token header",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:4000/api",
-      "type": "string"
-    },
-    {
-      "key": "token",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "userId",
-      "value": "",
-      "type": "string"
-    }
-  ],
   "item": [
     {
       "name": "Authentication",
@@ -35,10 +18,10 @@
                 "exec": [
                   "const json = pm.response.json();",
                   "if (json.token) {",
-                  "  pm.collectionVariables.set('token', json.token);",
+                  "  pm.environment.set('token', json.token);",
                   "}",
                   "if (json.user && json.user._id) {",
-                  "  pm.collectionVariables.set('userId', json.user._id);",
+                  "  pm.environment.set('userId', json.user._id);",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -60,7 +43,7 @@
               "raw": "{\n  \"username\": \"testadmin\",\n  \"password\": \"secret123\"\n}",
               "options": { "raw": { "language": "json" } }
             },
-            "description": "Authenticate a user. On success, {{token}} and {{userId}} are saved automatically as collection variables."
+            "description": "Authenticate a user. On success, {{token}} and {{userId}} are saved automatically to the active environment."
           },
           "response": []
         },
@@ -73,7 +56,7 @@
                 "exec": [
                   "const json = pm.response.json();",
                   "if (json.token) {",
-                  "  pm.collectionVariables.set('token', json.token);",
+                  "  pm.environment.set('token', json.token);",
                   "}"
                 ],
                 "type": "text/javascript"

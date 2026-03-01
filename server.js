@@ -20,6 +20,7 @@ const origins = process.env.CORS_ALLOWED_ORIGINS
 const app = express();
 
 app.use(cors({ origin: origins, optionsSuccessStatus: 200 }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.options('/*splat', cors({ origin: origins }));
 
 app.use(morgan('dev'));

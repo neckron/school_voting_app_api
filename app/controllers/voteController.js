@@ -20,6 +20,9 @@ exports.doVote = async function(req, res, next) {
 
     res.status(200).json({ message: 'Vote registered successfully.' });
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ success: false, message: 'Este usuario ya ha votado.' });
+    }
     next(err);
   }
 };

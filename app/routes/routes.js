@@ -37,7 +37,7 @@ const validateVote = [
   body('userId').notEmpty().withMessage('userId is required'),
   body('personVoteId').notEmpty().withMessage('personVoteId is required'),
   body('contrallorVoteId').notEmpty().withMessage('contrallorVoteId is required'),
-  body('location').trim().notEmpty().withMessage('location is required'),
+  body('location').optional({ nullable: true, checkFalsy: true }).trim(),
   handleValidation
 ];
 

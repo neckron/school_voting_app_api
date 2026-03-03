@@ -39,6 +39,18 @@ module.exports.register = async function(req, res, next) {
   }
 };
 
+module.exports.getPendingVoters = async function(req, res, next) {
+  try {
+    const users = await User.find(
+      { userrole: 'VOTER', $or: [{ vote: false }, { vote: null }, { vote: { $exists: false } }] },
+      { name: 1, location: 1, course: 1, _id: 0 }
+    ).sort({ location: 1, name: 1 }).exec();
+    res.status(200).json(users);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports.login = function(req, res) {
   passport.authenticate('local', function(err, user, info) {
     if (err) {

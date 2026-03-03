@@ -115,7 +115,7 @@ exports.resultsByLocation = async function(req, res, next) {
                 ' - ',
                 '$contrallorInfo.name',
                 ' ',
-                '$contrallorInfo.lastname'
+                { '$ifNull': ['$contrallorInfo.lastname', ''] }
               ]
             }
           },
@@ -163,7 +163,7 @@ exports.resultsByLocationPerson = async function(req, res, next) {
                 ' - ',
                 '$personInfo.name',
                 ' ',
-                '$personInfo.lastname'
+                { '$ifNull': ['$personInfo.lastname', ''] }
               ]
             }
           },

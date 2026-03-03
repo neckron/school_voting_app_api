@@ -85,6 +85,7 @@ routerProtect.use(function(req, res, next) {
 });
 
 // Protected routes
+routerProtect.get('/user/pending', ctrlAuth.getPendingVoters);
 routerProtect.post('/user/vote', validateVote, ctrlVote.doVote);
 routerProtect.post('/candidate/register', validateCandidate, ctrlCandidate.register);
 routerProtect.post('/user/bulkRegister', validateBulkRegister, ctrlAuth.bulkRegister);

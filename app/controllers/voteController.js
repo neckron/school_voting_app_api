@@ -106,19 +106,9 @@ exports.resultsByLocation = async function(req, res, next) {
       { '$unwind': '$contrallorInfo' },
       {
         $group: {
-          _id: {
-            location: '$location',
-            contrallorVote: {
-              '$concat': [
-                '#',
-                '$contrallorInfo.candidatenumber',
-                ' - ',
-                '$contrallorInfo.name',
-                ' ',
-                { '$ifNull': ['$contrallorInfo.lastname', ''] }
-              ]
-            }
-          },
+          _id: { location: '$location', contrallorVoteId: '$contrallorVote' },
+          candidateName: { $first: '$contrallorInfo.name' },
+          candidateNumber: { $first: '$contrallorInfo.candidatenumber' },
           count: { '$sum': 1 }
         }
       },
@@ -127,7 +117,7 @@ exports.resultsByLocation = async function(req, res, next) {
           _id: '$_id.location',
           votosContralores: {
             $push: {
-              contralor: '$_id.contrallorVote',
+              contralor: { $concat: ['#', '$candidateNumber', ' - ', '$candidateName'] },
               count: '$count'
             }
           }
@@ -154,19 +144,9 @@ exports.resultsByLocationPerson = async function(req, res, next) {
       { '$unwind': '$personInfo' },
       {
         $group: {
-          _id: {
-            location: '$location',
-            personVote: {
-              '$concat': [
-                '#',
-                '$personInfo.candidatenumber',
-                ' - ',
-                '$personInfo.name',
-                ' ',
-                { '$ifNull': ['$personInfo.lastname', ''] }
-              ]
-            }
-          },
+          _id: { location: '$location', personVoteId: '$personVote' },
+          candidateName: { $first: '$personInfo.name' },
+          candidateNumber: { $first: '$personInfo.candidatenumber' },
           count: { '$sum': 1 }
         }
       },
@@ -175,7 +155,7 @@ exports.resultsByLocationPerson = async function(req, res, next) {
           _id: '$_id.location',
           votosPersoneros: {
             $push: {
-              personero: '$_id.personVote',
+              personero: { $concat: ['#', '$candidateNumber', ' - ', '$candidateName'] },
               count: '$count'
             }
           }

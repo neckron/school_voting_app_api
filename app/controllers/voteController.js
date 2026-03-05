@@ -117,7 +117,7 @@ exports.resultsByLocation = async function(req, res, next) {
           _id: '$_id.location',
           votosContralores: {
             $push: {
-              contralor: { $concat: ['#', '$candidateNumber', ' - ', '$candidateName'] },
+              contralor: { $concat: ['#', { $ifNull: ['$candidateNumber', '?'] }, ' - ', { $ifNull: ['$candidateName', 'Voto en Blanco'] }] },
               count: '$count'
             }
           }
@@ -155,7 +155,7 @@ exports.resultsByLocationPerson = async function(req, res, next) {
           _id: '$_id.location',
           votosPersoneros: {
             $push: {
-              personero: { $concat: ['#', '$candidateNumber', ' - ', '$candidateName'] },
+              personero: { $concat: ['#', { $ifNull: ['$candidateNumber', '?'] }, ' - ', { $ifNull: ['$candidateName', 'Voto en Blanco'] }] },
               count: '$count'
             }
           }

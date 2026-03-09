@@ -31,7 +31,9 @@ function parseCsv(filePath) {
       console.warn(`  Warning: line ${i + 2} has ${values.length} fields, expected ${headers.length} — skipping`);
       return null;
     }
-    return Object.fromEntries(headers.map((h, idx) => [h, values[idx]]));
+    const obj = Object.fromEntries(headers.map((h, idx) => [h, values[idx]]));
+    if (!obj.userrole) obj.userrole = 'VOTER';
+    return obj;
   }).filter(Boolean);
 }
 
@@ -65,6 +67,8 @@ async function bulkRegister(token, users) {
   return body;
 }
 
+const BATCH_SIZE = 100;
+
 async function main() {
   console.log(`Reading: ${csvFile}`);
   const users = parseCsv(csvFile);
@@ -74,9 +78,17 @@ async function main() {
   const token = await login();
   console.log('Authenticated.');
 
-  console.log('Sending to /user/bulkRegister...');
-  const result = await bulkRegister(token, users);
-  console.log('Done:', result);
+  const batches = [];
+  for (let i = 0; i < users.length; i += BATCH_SIZE) {
+    batches.push(users.slice(i, i + BATCH_SIZE));
+  }
+
+  console.log(`Sending in ${batches.length} batch(es) of up to ${BATCH_SIZE}...`);
+  for (let i = 0; i < batches.length; i++) {
+    const result = await bulkRegister(token, batches[i]);
+    console.log(`  Batch ${i + 1}/${batches.length}: ${result.message}`);
+  }
+  console.log('Done.');
 }
 
 main().catch(err => {
